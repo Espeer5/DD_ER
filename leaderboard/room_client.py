@@ -57,11 +57,15 @@ def show_display(step_a, step_b):
     print("╠══════════════════════════════════════════════╣")
     print("║                                              ║")
     if ROOM == "A":
-        print(f"║ YOU:[" + "#" * 3 * step_a + " " * 3 * (6 - step_a) + "]                     ║")
-        print(f"║ OPP:[" + "#" * 3 * step_b + " " * 3 * (6 - step_b) + "]                     ║")
+        print(f"║ YOU:[" + "#" * 3 * step_a + " " * 3 * (6 - step_a) +
+                "]                     ║")
+        print(f"║ OPP:[" + "#" * 3 * step_b + " " * 3 * (6 - step_b) +
+                "]                     ║")
     else:
-        print(f"║ OPP:[" + "#" * 3 * step_a + " " * 3 * (6 - step_a) + "]                     ║")
-        print(f"║ YOU:[" + "#" * 3 * step_b + " " * 3 * (6 - step_b) + "]                     ║")
+        print(f"║ OPP:[" + "#" * 3 * step_a + " " * 3 * (6 - step_a) +
+                "]                     ║")
+        print(f"║ YOU:[" + "#" * 3 * step_b + " " * 3 * (6 - step_b) +
+                "]                     ║")
     print("║                                              ║")
     print("╚══════════════════════════════════════════════╝")
     
@@ -72,9 +76,11 @@ This function is used to send progress updates to the daemon running on the
 server to update the state of the leaderboard displayed in both rooms.
 """
 async def send_progress(writer):
+    show_display(0, 0)
     while True:
         try:
-            step_str = await aioconsole.ainput(f"[{ROOM}] Enter current step number: ")
+            step_str = (await
+                     aioconsole.ainput(f"[{ROOM}] Enter current step number: "))
             step = int(step_str)
             msg = json.dumps({
                 "type": "progress_update",
