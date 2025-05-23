@@ -88,3 +88,4 @@ if __name__ == "__main__":
                 time.sleep(1)
             print("GAME OVER HAHAHAHAHA START OVER\n")
             time.sleep(2)
+    print("SUCCESS. PASSWORD: SWISS")

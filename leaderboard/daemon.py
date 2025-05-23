@@ -20,6 +20,8 @@ import asyncio
 import json
 from datetime import datetime
 
+from print_util import PrintQ
+
 ################################################################################
 #  CONSTANTS                                                                   #
 ################################################################################
@@ -43,6 +45,9 @@ STATE = {
 # The set of connected client applications—should total 2
 CLIENTS = set()
 
+# Printing queue for non-blocking printing
+PRINTQ = PrintQ()
+
 ################################################################################
 #  FUNCTIONS                                                                   #
 ################################################################################
@@ -56,7 +61,7 @@ the client's progress and maintains the shared state between the two rooms.
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')
     CLIENTS.add(writer)
-    print(f"Client connected from {addr}")
+    PRINTQ.put(f"Client connected from {addr}")
 
     try:
         while True:
@@ -74,13 +79,13 @@ async def handle_client(reader, writer):
                 await broadcast_state()
 
     except Exception as e:
-        print(f"Error handling client {addr}: {e}")
+        PRINTQ.put(f"Error handling client {addr}: {e}")
 
     finally:
         CLIENTS.remove(writer)
         writer.close()
         await writer.wait_closed()
-        print(f"Client disconnected from {addr}")
+        PRINTQ.put(f"Client disconnected from {addr}")
 
 """
 broadcast_state()
@@ -104,7 +109,7 @@ async def broadcast_state():
 
 async def main():
     server = await asyncio.start_server(handle_client, LO, PORT)
-    print(f"Daemon started on localhost:{PORT}")
+    PRINTQ.put(f"Daemon started on localhost:{PORT}")
     async with server:
         await server.serve_forever()
 
@@ -113,10 +118,10 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("Daemon stopped.")
+        PRINTQ.put("Daemon stopped.")
     except Exception as e:
-        print(f"Error starting daemon: {e}")
+        PRINTQ.put(f"Error starting daemon: {e}")
     finally:
         for client in CLIENTS:
             client.close()
-        print("All clients disconnected.")
+        PRINTQ.put("All clients disconnected.")
